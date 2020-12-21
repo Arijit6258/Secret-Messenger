@@ -122,9 +122,43 @@ def crossover(population, crossoverRate):
         population[parentIndex2] = offspringChromosome2
 
 
+def mutation(mutationRate, totalBits, population):
+    ## calculate number of mutation operations that has to be done
+    numberOfKeys = len(population)
+    numberOfMutation = int((mutationRate*totalBits*numberOfKeys)/100)
+    for i in range(numberOfMutation):
+        ## select chromosome for mutation
+        index = random.randint(0, numberOfKeys-1)
+        chromosome = population[index]
 
+        ## select position in chromosome for mutation
+        position = random.randint(0, len(chromosome)-1)
+
+        ## construct muted chromosome
+        mutedChromosome = ""
+        mutedChromosome += chromosome[0:position]
+
+        ## toggle one bit
+        if chromosome[position] == '1':
+            mutedChromosome += '0'
+        else:
+            mutedChromosome += '1'
+
+        mutedChromosome += chromosome[position+1:]
+
+        ## replace actual chromosome with muted chromosome
+        population[index] = mutedChromosome
+
+
+
+''' MAIN ''' 
 
 totalBits = 64
 populationSize = 200
+crossoverRate = 0.9
+mutationRate = 0.2
+
 population = generatePopulation(totalBits, populationSize)
-crossover(population, 0.9)
+crossover(population, crossoverRate)
+mutation(mutationRate, totalBits, population)
+
