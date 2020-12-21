@@ -66,7 +66,7 @@ def crossover(population, crossoverRate):
     numberOfCrossover = int((crossoverRate*numberOfBits*numberOfKeys)/100)
 
     ## doing k-point crossovers
-    for i in range(numberOfCrossover):
+    while numberOfCrossover != 0:
         ## step1 - select two parent chromosomes
         parentIndex1 = random.randint(0, numberOfKeys-1)
         parentIndex2 = parentIndex1 ## making sure that index2 and index1 does not become same
@@ -117,9 +117,10 @@ def crossover(population, crossoverRate):
                 offspringChromosome2 += parentChromosome2[index3:]
 
         ## replace parent chromosomes with offspring chromosomes
-        ##print(parentChromosome1, parentChromosome2, offspringChromosome1, offspringChromosome2, crossoverPoints)
+        print(parentChromosome1, parentChromosome2, offspringChromosome1, offspringChromosome2, crossoverPoints)
         population[parentIndex1] = offspringChromosome1
         population[parentIndex2] = offspringChromosome2
+        numberOfCrossover -= 1
 
 
 def mutation(mutationRate, totalBits, population):
