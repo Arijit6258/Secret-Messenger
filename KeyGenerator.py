@@ -25,7 +25,7 @@ def generateSingleChromosome(totalBits):
             countOfSetBit = 0
             for pos in range(totalBits, bitPos, -1):
                 if (pos&bitPos) != 0:
-                    if chromosome[pos-bitPos-1] == '1':
+                    if chromosome[totalBits-pos] == '1':
                         countOfSetBit += 1
             
             ## for odd number of 1s parity bit = 1
@@ -42,7 +42,7 @@ def generateSingleChromosome(totalBits):
 ## generate population
 def generatePopulation(totalBits, populationSize):
     population = list()
-    for count in range(populationSize):
+    while len(population)  != populationSize:
         chromosome = generateSingleChromosome(totalBits)
         ## excluding same chromosome in population
         if(chromosome in population):
@@ -117,11 +117,16 @@ def crossover(population, crossoverRate):
                 offspringChromosome2 += parentChromosome2[index3:]
 
         ## replace parent chromosomes with offspring chromosomes
-        print(parentChromosome1, parentChromosome2, offspringChromosome1, offspringChromosome2, crossoverPoints)
+        ##print(parentChromosome1, parentChromosome2, offspringChromosome1, offspringChromosome2, crossoverPoints)
         population[parentIndex1] = offspringChromosome1
         population[parentIndex2] = offspringChromosome2
         numberOfCrossover -= 1
 
+
+''' 
+Step 3 - 
+    Mutation of chromosomes.
+'''
 
 def mutation(mutationRate, totalBits, population):
     ## calculate number of mutation operations that has to be done
@@ -149,6 +154,11 @@ def mutation(mutationRate, totalBits, population):
 
         ## replace actual chromosome with muted chromosome
         population[index] = mutedChromosome
+
+
+''' Step 4 - 
+        Fitness Function. Run Test.
+'''
 
 
 
