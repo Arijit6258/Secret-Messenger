@@ -5,6 +5,7 @@
 
 ## importing all the required libraries
 import random
+import math
 
 def generateSingleChromosome(totalBits):
     ## chromosome is of 64 bits. We take 64 length string
@@ -122,6 +123,8 @@ def crossover(population, crossoverRate):
         population[parentIndex2] = offspringChromosome2
         numberOfCrossover -= 1
 
+    return population
+
 
 ''' 
 Step 3 - 
@@ -155,11 +158,64 @@ def mutation(mutationRate, totalBits, population):
         ## replace actual chromosome with muted chromosome
         population[index] = mutedChromosome
 
+    return population
+
+
 
 ''' Step 4 - 
-        Fitness Function. Run Test.
+        Converge the population to fittest chromosomes with the help of Fitness Function.
+        Here randomness is the crucial factor because we are generating key for encryption and decryption.
+        So run test (a randomness test) is considered as fitness function.
 '''
 
+## Calculating Run test score for each chromosome
+def runTest(chromosome, totalBits):
+    ## number of run is count of consecutive groups of 1s and 0s
+    numberOfRuns = 0
+    for bitPos in range(totalBits-1, -1, -1):
+        ## either changing of a group or last group
+        if (bitPos == 0) or (chromosome[bitPos] != chromosome[bitPos-1]):
+            numberOfRuns += 1
+    
+    return numberOfRuns
+
+
+## calculating fitness of single chromosome
+def fitnessOfSingleChromosome(chromosome, totalBits):
+    mean = ((2*totalBits)-1)/3
+    stdDeviation = math.sqrt(16*totalBits-29)/90
+    numberOfRuns = runTest(chromosome, totalBits)
+    return (numberOfRuns-mean)/stdDeviation
+
+
+## calculating fitness of the entire population
+def fitnessOfPopulation(population, totalBits):
+    fitnessList = list()
+    for chromosome in population:
+        fitnessScore = fitnessOfSingleChromosome(chromosome, totalBits)
+        fitnessList.append(fitnessScore)
+
+    return fitnessList
+
+
+## Replacing least fit chromosomes by fittest chromosomes
+def replaceChromosome(population, fitnessList, populationSize):
+    maxScore = max(fitnessList)
+    minScore = min(fitnessList)
+    fittestChromosomeList = list()
+    ## taking all the fittest chromosome
+    for index in range(populationSize):
+        if fitnessList[index] == maxScore:
+            fittestChromosomeList.append(population[index])
+
+    for index in range(populationSize):
+        if fitnessList[index] == minScore:
+            ## randomly take a fittest chromosome
+            randomIndex = random.randint(0, len(fittestChromosomeList)-1)
+            fittestChromosome = fittestChromosomeList[randomIndex]
+            population[index] = fittestChromosome
+
+    return population
 
 
 ''' MAIN ''' 
@@ -170,6 +226,7 @@ crossoverRate = 0.9
 mutationRate = 0.2
 
 population = generatePopulation(totalBits, populationSize)
-crossover(population, crossoverRate)
-mutation(mutationRate, totalBits, population)
-
+population = crossover(population, crossoverRate)
+population = mutation(mutationRate, totalBits, population)
+fitnessList = fitnessOfPopulation(population, totalBits)
+population = replaceChromosome(population, fitnessList, populationSize)
