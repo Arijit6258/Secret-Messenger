@@ -202,6 +202,7 @@ def fitnessOfPopulation(population, totalBits):
 def replaceChromosome(population, fitnessList, populationSize):
     maxScore = max(fitnessList)
     minScore = min(fitnessList)
+    print(maxScore, minScore)
     fittestChromosomeList = list()
     ## taking all the fittest chromosome
     for index in range(populationSize):
@@ -226,7 +227,9 @@ crossoverRate = 0.9
 mutationRate = 0.2
 
 population = generatePopulation(totalBits, populationSize)
-population = crossover(population, crossoverRate)
-population = mutation(mutationRate, totalBits, population)
-fitnessList = fitnessOfPopulation(population, totalBits)
-population = replaceChromosome(population, fitnessList, populationSize)
+
+for i in range(10000):
+    population = crossover(population, crossoverRate)
+    population = mutation(mutationRate, totalBits, population)
+    fitnessList = fitnessOfPopulation(population, totalBits)
+    population = replaceChromosome(population, fitnessList, populationSize)
