@@ -6,6 +6,7 @@
 ## importing all the required libraries
 import random
 import math
+import numpy as np
 
 def generateSingleChromosome(totalBits):
     ## chromosome is of 64 bits. We take 64 length string
@@ -198,7 +199,7 @@ def fitnessOfPopulation(population, totalBits):
     return fitnessList
 
 
-## Replacing least fit chromosomes by fittest chromosomes
+## Replacing least fit chromosomes by fittest chromosomes so that population becomes more fit
 def replaceChromosome(population, fitnessList, populationSize):
     maxScore = max(fitnessList)
     minScore = min(fitnessList)
@@ -218,7 +219,63 @@ def replaceChromosome(population, fitnessList, populationSize):
     return population
 
 
+
+''' Step 5 - 
+        Needleman- Wunsch (NW) Algorithm - Global sequence alignment algorithm to generate final key
+'''
+
+## Needleman- Wunsch (NW) Algorithm is implemented using Dynamic Programming
+def getNWScore(chromosome1, chromosome2, totalBits):
+    ## Create a 2D matrix
+    NW_matrix = np.zeros((totalBits+1, totalBits+1))
+
+    ## scores for different conditions
+    matchScore = 1
+    mismatchPenalty = -1
+    gapPenalty = -2
+
+    ''' Step1 - Initialization '''
+
+    ## filling the first row
+    for col in range(1, totalBits+1):
+        NW_matrix[0][col] = NW_matrix[0][col-1]+gapPenalty
+
+    ## filling the first col
+    for row in range(1, totalBits+1):
+        NW_matrix[row][0] = NW_matrix[row-1][0]+gapPenalty
+
+    print('initialized matrix : ')
+    print(NW_matrix) 
+
+
+    ''' Step2 - Matrix Filling '''
+
+    for row in range(1, totalBits+1):
+        for col in range(1, totalBits+1):
+            ## value taken from left, up and gap penalty added
+            leftValue = NW_matrix[row][col-1]+gapPenalty
+            upValue = NW_matrix[row-1][col]+gapPenalty
+            
+            ## value taken from diagonal and match penalty or mismatch penalty added 
+            diagonalValue = NW_matrix[row-1][col-1]
+
+            if chromosome1[row-1] == chromosome2[col-1]:
+                diagonalValue += matchScore
+            else:
+                diagonalValue += mismatchPenalty
+
+            NW_matrix[row][col] = max(upValue, leftValue, diagonalValue)
+
+    print("after step2 : ")
+    print(NW_matrix)
+
+    ## bottom-right corner of NW Matrix contains score for alignment of chromosom1 and chromosome2
+    return NW_matrix[totalBits][totalBits]
+
+
+
 ''' MAIN ''' 
+
 
 totalBits = 100
 populationSize = 100
@@ -228,7 +285,13 @@ mutationRate = 0.2
 population = generatePopulation(totalBits, populationSize)
 
 minScore = -1
-maxScore = -1
+
+'''
+    Repeat steps from 1 to 4 till we get most random chromosomes. 
+    As we are getting chromosomes with negative fitness values 
+    we repeated the above steps till we get positive fitness score 
+    for all the chromosomes in population.
+'''
 while minScore <= 0:
     population = crossover(population, crossoverRate)
     population = mutation(mutationRate, totalBits, population)
@@ -236,3 +299,4 @@ while minScore <= 0:
     minScore = min(fitnessList)
     population = replaceChromosome(population, fitnessList, populationSize)
     minScore = min(fitnessList)
+
