@@ -244,9 +244,6 @@ def getNWScore(chromosome1, chromosome2, totalBits):
     for row in range(1, totalBits+1):
         NW_matrix[row][0] = NW_matrix[row-1][0]+gapPenalty
 
-    print('initialized matrix : ')
-    print(NW_matrix) 
-
 
     ''' Step2 - Matrix Filling '''
 
@@ -265,9 +262,6 @@ def getNWScore(chromosome1, chromosome2, totalBits):
                 diagonalValue += mismatchPenalty
 
             NW_matrix[row][col] = max(upValue, leftValue, diagonalValue)
-
-    print("after step2 : ")
-    print(NW_matrix)
 
     ## bottom-right corner of NW Matrix contains score for alignment of chromosom1 and chromosome2
     return NW_matrix[totalBits][totalBits]
