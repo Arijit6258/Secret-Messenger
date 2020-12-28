@@ -1,6 +1,6 @@
 '''
  step - 1 :
-        Generate population of P chromosomes. Here P is taken to be 200.
+        Generate population of P chromosomes. Here P is taken to be 100.
 '''
 
 ## importing all the required libraries
@@ -232,7 +232,7 @@ def getNWScore(chromosome1, chromosome2, totalBits):
     ## scores for different conditions
     matchScore = 1
     mismatchPenalty = -1
-    gapPenalty = -2
+    gapPenalty = -1
 
     ''' Step1 - Initialization '''
 
@@ -263,9 +263,65 @@ def getNWScore(chromosome1, chromosome2, totalBits):
 
             NW_matrix[row][col] = max(upValue, leftValue, diagonalValue)
 
-    ## bottom-right corner of NW Matrix contains score for alignment of chromosom1 and chromosome2
+    ## bottom-right corner of NW Matrix contains score for alignment of chromosome1 and chromosome2
     return NW_matrix[totalBits][totalBits]
 
+
+
+
+## XOR Operation
+def XOR(chromosome1, chromosome2, totalBits):
+    '''
+        XOR-
+            0 0 | 0
+            0 1 | 1
+            1 0 | 1
+            1 1 | 0
+
+        Same Bit - 0
+        Different Bit - 1
+    '''
+
+    XORedChromosome = ""
+    for bitPos in range(totalBits):
+        if chromosome1[bitPos] == chromosome2[bitPos]:
+            XORedChromosome += '0'
+        else:
+            XORedChromosome += '1'
+    
+    return XORedChromosome
+
+
+
+## Applying NW Algorithm in population
+def applyNW(population, populationSize, totalBits):
+    fitnessList = fitnessOfPopulation(population, totalBits)
+    maxScore = max(fitnessList)
+    fittestChromosome = population[fitnessList.index(maxScore)]
+    NWScoreList = list()
+    ## Find NW scores for each chromosome in population
+    for chromosome in population:
+        score = getNWScore(fittestChromosome, chromosome, totalBits)
+        NWScoreList.append(score)
+    
+    ## Find chromosome with lowest score
+    minScore = min(NWScoreList)
+    lowestNWChromosome = population[NWScoreList.index(minScore)]
+    ## doing xor operation between fittest chromosome and chromosome with lowest NW Score
+    XORedChromosome = XOR(fittestChromosome, lowestNWChromosome, totalBits)
+
+    ## Replacing fittest chromosome and lowest NW scored chromosome with Xored chromosome
+    newPopulation = list()
+    for chromosome in population:
+        if chromosome == fittestChromosome or chromosome == lowestNWChromosome:
+            continue
+        else:
+            newPopulation.append(chromosome)
+
+    ## adding new Xored chromosome
+    newPopulation.append(XORedChromosome)
+
+    return newPopulation
 
 
 ''' MAIN ''' 
@@ -294,3 +350,13 @@ while minScore <= 0:
     population = replaceChromosome(population, fitnessList, populationSize)
     minScore = min(fitnessList)
 
+
+## Applying NW algorithm to get the final key.
+while populationSize > 1:
+    population = applyNW(population, populationSize, totalBits)
+    populationSize -= 1
+    #print(populationSize)
+
+finalKey = population[0]
+
+print(finalKey)
