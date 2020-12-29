@@ -190,11 +190,13 @@ def fitnessOfSingleChromosome(chromosome, totalBits):
 
 
 ## calculating fitness of the entire population
-def fitnessOfPopulation(population, totalBits):
+def fitnessOfPopulation(population, totalBits, check = 0):
     fitnessList = list()
     for chromosome in population:
         fitnessScore = fitnessOfSingleChromosome(chromosome, totalBits)
         fitnessList.append(fitnessScore)
+        if (check):
+            print(chromosome, fitnessScore)
 
     return fitnessList
 
@@ -296,40 +298,55 @@ def XOR(chromosome1, chromosome2, totalBits):
 ## Applying NW Algorithm in population
 def applyNW(population, populationSize, totalBits):
     fitnessList = fitnessOfPopulation(population, totalBits)
+
+    ## Find index of fittest chromosomes
     maxScore = max(fitnessList)
-    fittestChromosome = population[fitnessList.index(maxScore)]
-    NWScoreList = list()
+    fittestIndex = list()
+    for index in range(populationSize):
+        if fitnessList[index] == maxScore:
+            fittestIndex.append(index)
+
+    ## Randomly choose one of the fittest chromosomes
+    fittestChromosome = population[fittestIndex[random.randint(0, len(fittestIndex)-1)]]
+
     ## Find NW scores for each chromosome in population
+    NWScoreList = list()
     for chromosome in population:
         score = getNWScore(fittestChromosome, chromosome, totalBits)
         NWScoreList.append(score)
     
-    ## Find chromosome with lowest score
+    ## Find chromosomes with lowest score
     minScore = min(NWScoreList)
-    lowestNWChromosome = population[NWScoreList.index(minScore)]
-    ## doing xor operation between fittest chromosome and chromosome with lowest NW Score
-    XORedChromosome = XOR(fittestChromosome, lowestNWChromosome, totalBits)
+    ## Chromosome with lowest score
+    index1 = NWScoreList.index(minScore)
+    chromosome1 = population[index]
+    ## Chromosome with lowest score is popped out
+    population.pop(index1)
+    NWScoreList.pop(index1)
+    ## Chromosome with second lowest score
+    secondMinScore = min(NWScoreList)
+    index2 = NWScoreList.index(secondMinScore)
+    chromosome2 = population[index2]
+    ## Chromosome with lowest score is popped out
+    population.pop(index2)
+    NWScoreList.pop(index2)
 
-    ## Replacing fittest chromosome and lowest NW scored chromosome with Xored chromosome
-    newPopulation = list()
-    for chromosome in population:
-        if chromosome == fittestChromosome or chromosome == lowestNWChromosome:
-            continue
-        else:
-            newPopulation.append(chromosome)
+
+    ## doing xor operation between chromosomes with lowest NW Score
+    XORedChromosome = XOR(chromosome1, chromosome2, totalBits)
 
     ## adding new Xored chromosome
-    newPopulation.append(XORedChromosome)
+    population.append(XORedChromosome)
 
-    return newPopulation
+    return population
 
 
 ''' MAIN ''' 
 
 
-totalBits = 100
+totalBits = 64
 populationSize = 100
-crossoverRate = 0.9
+crossoverRate = 0.85
 mutationRate = 0.2
 
 population = generatePopulation(totalBits, populationSize)
@@ -355,7 +372,6 @@ while minScore <= 0:
 while populationSize > 1:
     population = applyNW(population, populationSize, totalBits)
     populationSize -= 1
-    #print(populationSize)
 
 finalKey = population[0]
 
