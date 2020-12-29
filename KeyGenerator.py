@@ -3,10 +3,14 @@
         Generate population of P chromosomes. Here P is taken to be 100.
 '''
 
+
+
 ## importing all the required libraries
 import random
 import math
 import numpy as np
+
+
 
 def generateSingleChromosome(totalBits):
     ## chromosome is of 64 bits. We take 64 length string
@@ -41,6 +45,7 @@ def generateSingleChromosome(totalBits):
 
 
 
+
 ## generate population
 def generatePopulation(totalBits, populationSize):
     population = list()
@@ -54,10 +59,12 @@ def generatePopulation(totalBits, populationSize):
 
 
 
+
 '''
  step - 2 :
         Generate two offspring chromosomes from two parent chromosomes after crossover.
 '''
+
 
 
 
@@ -119,7 +126,7 @@ def crossover(population, crossoverRate):
                 offspringChromosome2 += parentChromosome2[index3:]
 
         ## replace parent chromosomes with offspring chromosomes
-        ##print(parentChromosome1, parentChromosome2, offspringChromosome1, offspringChromosome2, crossoverPoints)
+        ## print(parentChromosome1, parentChromosome2, offspringChromosome1, offspringChromosome2, crossoverPoints)
         population[parentIndex1] = offspringChromosome1
         population[parentIndex2] = offspringChromosome2
         numberOfCrossover -= 1
@@ -127,10 +134,15 @@ def crossover(population, crossoverRate):
     return population
 
 
+
+
 ''' 
 Step 3 - 
     Mutation of chromosomes.
 '''
+
+
+
 
 def mutation(mutationRate, totalBits, population):
     ## calculate number of mutation operations that has to be done
@@ -163,11 +175,15 @@ def mutation(mutationRate, totalBits, population):
 
 
 
+
 ''' Step 4 - 
         Converge the population to fittest chromosomes with the help of Fitness Function.
         Here randomness is the crucial factor because we are generating key for encryption and decryption.
         So run test (a randomness test) is considered as fitness function.
 '''
+
+
+
 
 ## Calculating Run test score for each chromosome
 def runTest(chromosome, totalBits):
@@ -181,12 +197,16 @@ def runTest(chromosome, totalBits):
     return numberOfRuns
 
 
+
+
 ## calculating fitness of single chromosome
 def fitnessOfSingleChromosome(chromosome, totalBits):
     mean = ((2*totalBits)-1)/3
     stdDeviation = math.sqrt(16*totalBits-29)/90
     numberOfRuns = runTest(chromosome, totalBits)
     return (numberOfRuns-mean)/stdDeviation
+
+
 
 
 ## calculating fitness of the entire population
@@ -199,6 +219,8 @@ def fitnessOfPopulation(population, totalBits, check = 0):
             print(chromosome, fitnessScore)
 
     return fitnessList
+
+
 
 
 ## Replacing least fit chromosomes by fittest chromosomes so that population becomes more fit
@@ -222,9 +244,14 @@ def replaceChromosome(population, fitnessList, populationSize):
 
 
 
+
+
 ''' Step 5 - 
         Needleman- Wunsch (NW) Algorithm - Global sequence alignment algorithm to generate final key
 '''
+
+
+
 
 ## Needleman- Wunsch (NW) Algorithm is implemented using Dynamic Programming
 def getNWScore(chromosome1, chromosome2, totalBits):
@@ -295,6 +322,7 @@ def XOR(chromosome1, chromosome2, totalBits):
 
 
 
+
 ## Applying NW Algorithm in population
 def applyNW(population, populationSize, totalBits):
     fitnessList = fitnessOfPopulation(population, totalBits)
@@ -341,7 +369,11 @@ def applyNW(population, populationSize, totalBits):
     return population
 
 
+
+
 ''' MAIN ''' 
+
+
 
 
 totalBits = 64
@@ -359,6 +391,7 @@ minScore = -1
     we repeated the above steps till we get positive fitness score 
     for all the chromosomes in population.
 '''
+
 while minScore <= 0:
     population = crossover(population, crossoverRate)
     population = mutation(mutationRate, totalBits, population)
