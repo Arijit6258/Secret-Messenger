@@ -74,5 +74,28 @@ def dnaEncoding(encoding_table, text):
 
 
 
+''' 
+    Step 3 - Transcription.
+        In Biochemistry, the process of transcription begins when an enzyme called RNA polymerase (RNA pol) 
+        attaches itself to the template DNA strand and begins to catalyse the production of the complementary RNA, 
+        called the mRNA.
+'''
+
+
+
+
+def transcription(encoded_text):
+    original_complementary_nucleotide = {'A' : 'U', 'T' : 'A', 'C' : 'G', 'G' : 'C'}
+    mRNA = ""
+    for original_nucleotide in encoded_text:
+        complementary_nucleotide = original_complementary_nucleotide[original_nucleotide]
+        mRNA += complementary_nucleotide
+    
+    return mRNA
+
+
+
+
 encoding_table = dnaSequencing()
 encoded_text = dnaEncoding(encoding_table, 'eucaleptus')
+mRNA = transcription(encoded_text)
