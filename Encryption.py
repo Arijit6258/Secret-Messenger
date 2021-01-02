@@ -52,4 +52,27 @@ def dnaSequencing():
 
     return final_encoding_table 
 
-print(dnaSequencing())
+
+
+
+''' 
+    Step 2 - DNA Encoding.
+        Encode the text using encoding table. Replace all the characters with corresponding sequence.
+'''
+
+
+
+
+def dnaEncoding(encoding_table, text):
+    encoded_text = ""
+    for chracter in text:
+        ## Each character is replaced by corresponding sequence
+        encoded_text += encoding_table[chracter]
+
+    return encoded_text
+
+
+
+
+encoding_table = dnaSequencing()
+encoded_text = dnaEncoding(encoding_table, 'eucaleptus')
